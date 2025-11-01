@@ -13,24 +13,27 @@ const TaekwondoTracker = () => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+    const loadData = async () => {
     try {
-      const result = await (window as any).storage.get('taekwondo-sessions');
-      if (result) {
-        setSessions(JSON.parse(result.value));
-      }
+        const response = await fetch('/api/sessions');
+        const data = await response.json();
+        setSessions(data);
     } catch (error) {
-      console.log('No hay datos previos');
+        console.log('No hay datos previos');
     }
-  };
+    };
 
-  const saveData = async (newSessions: any[]) => {
+    const saveData = async (newSessions: any[]) => {
     try {
-      await (window as any).storage.set('taekwondo-sessions', JSON.stringify(newSessions));
+        await fetch('/api/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSessions),
+        });
     } catch (error) {
-      console.error('Error guardando datos:', error);
+        console.error('Error guardando datos:', error);
     }
-  };
+    };
 
   function getWeekNumber(date: Date) {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
